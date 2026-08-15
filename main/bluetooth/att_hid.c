@@ -473,7 +473,10 @@ static void bt_att_hid_process_current_state(struct bt_dev *device,
 static void bt_att_hid_start_next_state(struct bt_dev *device,
         struct bt_att_hid *hid_data) {
     if (device->ids.type == BT_SW2 && !atomic_test_bit(&device->flags, BT_DEV_HID_INIT_DONE)) {
-        bt_hid_sw2_init(device);
+        /* Go through the common dispatcher, which resolves to bt_hid_sw2_init
+         * for BT_SW2, so that everything hooked on HID init runs for SW2 too.
+         */
+        bt_hid_init(device);
     }
     else {
         device->hid_state++;

@@ -134,7 +134,7 @@ void dev_led_init(void) {
 }
 
 void dev_led_set(uint8_t num, uint8_t value) {
-    if (num < ARRAY_SIZE(dev_led_pins)) {
+    if ((uint32_t)num < ARRAY_SIZE(dev_led_pins)) {
         gpio_set_level(dev_led_pins[num], value);
     }
 }
