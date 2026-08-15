@@ -56,6 +56,15 @@ struct gc_kb_map {
     uint8_t xor;
 } __packed;
 
+/* Button toggling the face buttons mapping between names & positions.
+ * Upstream uses View (PAD_MS); this lets a build free that button up.
+ */
+#ifdef CONFIG_BLUERETRO_GC_TOGGLE_ON_SHARE
+#define GC_MAP_TOGGLE_BTN PAD_MQ
+#else
+#define GC_MAP_TOGGLE_BTN PAD_MS
+#endif
+
 static const uint32_t gc_mask[4] = {0x773F0FFF, 0x00000000, 0x00000000, BR_COMBO_MASK};
 static const uint32_t gc_desc[4] = {0x110000FF, 0x00000000, 0x00000000, 0x00000000};
 static DRAM_ATTR const uint32_t gc_btns_mask[32] = {
@@ -170,8 +179,8 @@ void gc_meta_init(struct wired_ctrl *ctrl_data) {
 
 static void gc_ctrl_special_action(struct wired_ctrl *ctrl_data, struct wired_data *wired_data) {
     /* Face buttons mapping convertion toggle between names & positions */
-    if (ctrl_data->map_mask[0] & generic_btns_mask[PAD_MS]) {
-        if (ctrl_data->btns[0].value & generic_btns_mask[PAD_MS]) {
+    if (ctrl_data->map_mask[0] & generic_btns_mask[GC_MAP_TOGGLE_BTN]) {
+        if (ctrl_data->btns[0].value & generic_btns_mask[GC_MAP_TOGGLE_BTN]) {
             if (!atomic_test_bit(&wired_data->flags, WIRED_WAITING_FOR_RELEASE)) {
                 atomic_set_bit(&wired_data->flags, WIRED_WAITING_FOR_RELEASE);
             }

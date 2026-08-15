@@ -16,6 +16,15 @@ menu "BlueRetro"
             Requires BLUERETRO_HW2 to be disabled as those pins are used by the
             HW2 reset & port sense lines.
 
+    config BLUERETRO_GC_TOGGLE_ON_SHARE
+        bool "Toggle GC face buttons mapping with Share instead of View"
+        default n
+        help
+            The GameCube driver toggles its face buttons mapping between names
+            and positions when the button mapped to View (PAD_MS) is released.
+            Select this to move that toggle to Share (PAD_MQ), which frees View
+            up to be mapped to a regular GameCube button.
+
     config BLUERETRO_HW1_HOTPLUG
         bool "Report wired ports as plugged only when a BT ctrl is connected"
         depends on !BLUERETRO_HW2
