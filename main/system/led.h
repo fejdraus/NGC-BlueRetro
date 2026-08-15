@@ -15,4 +15,9 @@ void err_led_clear(void);
 void err_led_pulse(void);
 uint32_t err_led_get_pin(void);
 
+#ifdef CONFIG_RETROSCALER_BLUERETRO_4LEDS_HW
+void dev_led_init(void);
+void dev_led_set(uint8_t num, uint8_t value);
+#endif
+
 #endif /* _LED_H_ */

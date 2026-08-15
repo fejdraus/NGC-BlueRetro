@@ -26,6 +26,7 @@
 #include "debug.h"
 #include "mon.h"
 #include "system/fs.h"
+#include "system/led.h"
 #include "adapter/config.h"
 #include "adapter/gameid.h"
 #include "adapter/memory_card.h"
@@ -530,6 +531,9 @@ void bt_host_reset_dev(struct bt_dev *device) {
     return;
 
 reset_dev:
+#ifdef CONFIG_RETROSCALER_BLUERETRO_4LEDS_HW
+    dev_led_set(dev_id, 0);
+#endif
     adapter_init_buffer(dev_id);
     memset(bt_adapter.data[dev_id].raw_src_mappings, 0, sizeof(*bt_adapter.data[0].raw_src_mappings) * REPORT_MAX);
     memset(bt_adapter.data[dev_id].reports, 0, sizeof(bt_adapter.data[0].reports));

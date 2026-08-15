@@ -5,6 +5,7 @@
 
 #include "bluetooth/host.h"
 #include "bluetooth/hci.h"
+#include "system/led.h"
 #include "tools/util.h"
 #include "generic.h"
 #include "ps3.h"
@@ -100,6 +101,9 @@ void bt_hid_set_type_flags_from_name(struct bt_dev *device, const char* name) {
 void bt_hid_init(struct bt_dev *device) {
     if (device->ids.type > BT_NONE && bt_hid_init_list[device->ids.type]) {
         bt_hid_init_list[device->ids.type](device);
+#ifdef CONFIG_RETROSCALER_BLUERETRO_4LEDS_HW
+        dev_led_set(device->ids.id, 1);
+#endif
     }
 }
 

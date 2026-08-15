@@ -10,6 +10,7 @@
 #include "system/gpio.h"
 #include "driver/ledc.h"
 #include "adapter/config.h"
+#include "tools/util.h"
 #include "led.h"
 
 #ifdef CONFIG_BLUERETRO_SYSTEM_SEA_BOARD
@@ -18,6 +19,21 @@
 #define ERR_LED_PIN 17
 #endif
 #define PICO_ERR_LED_PIN 20
+
+#ifdef CONFIG_RETROSCALER_BLUERETRO_4LEDS_HW
+/* GPIO 14 is also the BT monitor & coverage UART CTS pin, and GPIO 12 & 15
+ * used by those UARTs are the HW1 port LEDs, so those debug features can't
+ * be combined with this HW.
+ */
+#if defined(CONFIG_BLUERETRO_BT_H4_TRACE) || defined(CONFIG_BLUERETRO_COVERAGE)
+#error "RETROSCALER_BLUERETRO_4LEDS_HW conflicts with BT_H4_TRACE & COVERAGE UART pins"
+#endif
+
+/* Per BT device slot LEDs of the RetroScaler NGC 4 LEDs HW */
+static const uint8_t dev_led_pins[] = {
+    14, 32, 33, 25
+};
+#endif
 
 /* LED flags */
 enum {
@@ -100,3 +116,26 @@ void err_led_pulse(void) {
 uint32_t err_led_get_pin(void) {
     return err_led_pin;
 }
+
+#ifdef CONFIG_RETROSCALER_BLUERETRO_4LEDS_HW
+void dev_led_init(void) {
+    gpio_config_t io_conf = {
+        .intr_type = GPIO_INTR_DISABLE,
+        .mode = GPIO_MODE_OUTPUT,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .pull_up_en = GPIO_PULLUP_ENABLE,
+    };
+
+    for (uint32_t i = 0; i < ARRAY_SIZE(dev_led_pins); i++) {
+        io_conf.pin_bit_mask = 1ULL << dev_led_pins[i];
+        gpio_config(&io_conf);
+        gpio_set_level(dev_led_pins[i], 0);
+    }
+}
+
+void dev_led_set(uint8_t num, uint8_t value) {
+    if (num < ARRAY_SIZE(dev_led_pins)) {
+        gpio_set_level(dev_led_pins[num], value);
+    }
+}
+#endif /* CONFIG_RETROSCALER_BLUERETRO_4LEDS_HW */

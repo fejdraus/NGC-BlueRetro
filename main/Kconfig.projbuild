@@ -6,6 +6,16 @@ menu "BlueRetro"
         help
             Select this to enable HW2 features like port detection.
 
+    config RETROSCALER_BLUERETRO_4LEDS_HW
+        bool "RETROSCALER_BLUERETRO_4LEDS_HW"
+        depends on !BLUERETRO_HW2
+        default n
+        help
+            Select this to enable RetroScaler BlueRetro NGC 4 LEDs HW features,
+            i.e. the per BT device slot connection LEDs on GPIO 14, 32, 33 & 25.
+            Requires BLUERETRO_HW2 to be disabled as those pins are used by the
+            HW2 reset & port sense lines.
+
     choice
         prompt "Select universal or specific system"
         default BLUERETRO_SYSTEM_UNIVERSAL
