@@ -16,6 +16,16 @@ menu "BlueRetro"
             Requires BLUERETRO_HW2 to be disabled as those pins are used by the
             HW2 reset & port sense lines.
 
+    config BLUERETRO_GC_XBOX_FACE_LAYOUT
+        bool "Match GC face buttons by name for Xbox / PlayStation pads"
+        default n
+        help
+            The GameCube driver maps face buttons by position by default, which
+            on an Xbox or PlayStation pad swaps X and B since those consoles put
+            them on opposite sides. Select this to match them by name instead.
+            The alternate table, reachable with the mapping toggle, keeps
+            matching names for Nintendo layout pads.
+
     config BLUERETRO_GC_TOGGLE_ON_SHARE
         bool "Toggle GC face buttons mapping with Share instead of View"
         default n

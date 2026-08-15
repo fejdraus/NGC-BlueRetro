@@ -65,6 +65,19 @@ struct gc_kb_map {
 #define GC_MAP_TOGGLE_BTN PAD_MS
 #endif
 
+/* Default face buttons layout. Upstream maps by position, which on an Xbox or
+ * PlayStation pad puts B where X is and vice versa. The alternate table below
+ * matches names for Nintendo layout pads, so with this option the toggle picks
+ * between the two families instead of leaving Xbox pads without a name match.
+ */
+#ifdef CONFIG_BLUERETRO_GC_XBOX_FACE_LAYOUT
+#define GC_FACE_LEFT  BIT(GC_X)
+#define GC_FACE_RIGHT BIT(GC_B)
+#else
+#define GC_FACE_LEFT  BIT(GC_B)
+#define GC_FACE_RIGHT BIT(GC_X)
+#endif
+
 static const uint32_t gc_mask[4] = {0x773F0FFF, 0x00000000, 0x00000000, BR_COMBO_MASK};
 static const uint32_t gc_desc[4] = {0x110000FF, 0x00000000, 0x00000000, 0x00000000};
 static DRAM_ATTR const uint32_t gc_btns_mask[32] = {
@@ -72,7 +85,7 @@ static DRAM_ATTR const uint32_t gc_btns_mask[32] = {
     0, 0, 0, 0,
     BIT(GC_LD_LEFT), BIT(GC_LD_RIGHT), BIT(GC_LD_DOWN), BIT(GC_LD_UP),
     0, 0, 0, 0,
-    BIT(GC_B), BIT(GC_X), BIT(GC_A), BIT(GC_Y),
+    GC_FACE_LEFT, GC_FACE_RIGHT, BIT(GC_A), BIT(GC_Y),
     BIT(GC_START), 0, 0, 0,
     0, BIT(GC_Z), BIT(GC_L), 0,
     0, BIT(GC_Z), BIT(GC_R), 0,
