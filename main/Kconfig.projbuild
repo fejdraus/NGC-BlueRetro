@@ -16,6 +16,18 @@ menu "BlueRetro"
             Requires BLUERETRO_HW2 to be disabled as those pins are used by the
             HW2 reset & port sense lines.
 
+    config BLUERETRO_HW1_HOTPLUG
+        bool "Report wired ports as plugged only when a BT ctrl is connected"
+        depends on !BLUERETRO_HW2
+        default n
+        help
+            Upstream dropped hotplug for HW1 devices, so every wired port always
+            answers the console, which sees a full set of idle controllers.
+            Select this to bring it back: a port is announced to the console only
+            once a Bluetooth controller is connected to that slot, and the wired
+            side starts silent. HW1 has no port sense lines, but hotplug does not
+            need them: it only keys off the BT connection state.
+
     choice
         prompt "Select universal or specific system"
         default BLUERETRO_SYSTEM_UNIVERSAL

@@ -683,7 +683,15 @@ void nsi_init(uint32_t package) {
 
     RMT.apb_conf.fifo_mask = 1;
 
+#ifdef CONFIG_BLUERETRO_HW1_HOTPLUG
+    /* Start silent so the console sees no controller until a BT one connects.
+     * This is the pre-9600f0d behaviour, which hotplug depends on. N64 always
+     * announced all its ports.
+     */
+    nsi_port_cfg((wired_adapter.system_id == N64) ? 0xF : 0x0);
+#else
     nsi_port_cfg(0xF);
+#endif
 
     for (uint32_t i = 0; i < ARRAY_SIZE(gpio_pin); i++) {
         RMT.conf_ch[rmt_ch[i][system]].conf0.div_cnt = 40; /* 80MHz (APB CLK) / 40 = 0.5us TICK */;
