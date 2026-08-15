@@ -731,6 +731,22 @@ void nsi_port_cfg(uint16_t mask) {
     for (uint32_t i = 0; i < ARRAY_SIZE(gpio_pin); i++) {
 
         if (mask & 0x1) {
+            uint32_t ch = rmt_ch[i][system];
+
+            /* Re-arm the channel before hooking the pin back up. A port can be
+             * disabled between RX End and TX End, which leaves the channel with
+             * rx_en cleared and the memory owned by SW, and only TX End ever
+             * puts it back into RX. Do it while the channel input is still tied
+             * high, so the ISR cannot be servicing this channel meanwhile.
+             */
+            RMT.conf_ch[ch].conf1.mem_rd_rst = 1;
+            RMT.conf_ch[ch].conf1.mem_rd_rst = 0;
+            RMT.conf_ch[ch].conf1.mem_owner = RMT_LL_MEM_OWNER_HW;
+            rmt_ll_clear_interrupt_status(&RMT, RMT_LL_EVENT_RX_DONE(ch) | RMT_LL_EVENT_RX_ERROR(ch));
+            /* The error path masks this one on the first bad frame */
+            rmt_ll_enable_interrupt(&RMT, RMT_LL_EVENT_RX_ERROR(ch), 1);
+            RMT.conf_ch[ch].conf1.rx_en = 1;
+
             PIN_FUNC_SELECT(GPIO_PIN_MUX_REG_IRAM[gpio_pin[i]], PIN_FUNC_GPIO);
             /* Bidirectional open-drain */
             gpio_set_direction_iram(gpio_pin[i], GPIO_MODE_INPUT_OUTPUT_OD);
