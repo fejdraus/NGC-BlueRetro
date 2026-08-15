@@ -61,8 +61,13 @@ struct gc_kb_map {
  */
 #ifdef CONFIG_BLUERETRO_GC_TOGGLE_ON_SHARE
 #define GC_MAP_TOGGLE_BTN PAD_MQ
+/* PAD_MQ is not part of the stock GC destination mask, so open it up or no
+ * mapping could ever reach the toggle. PAD_MS is already in there.
+ */
+#define GC_TOGGLE_DST_MASK BIT(PAD_MQ)
 #else
 #define GC_MAP_TOGGLE_BTN PAD_MS
+#define GC_TOGGLE_DST_MASK 0
 #endif
 
 /* Default face buttons layout. Upstream maps by position, which on an Xbox or
@@ -78,7 +83,7 @@ struct gc_kb_map {
 #define GC_FACE_RIGHT BIT(GC_X)
 #endif
 
-static const uint32_t gc_mask[4] = {0x773F0FFF, 0x00000000, 0x00000000, BR_COMBO_MASK};
+static const uint32_t gc_mask[4] = {0x773F0FFF | GC_TOGGLE_DST_MASK, 0x00000000, 0x00000000, BR_COMBO_MASK};
 static const uint32_t gc_desc[4] = {0x110000FF, 0x00000000, 0x00000000, 0x00000000};
 static DRAM_ATTR const uint32_t gc_btns_mask[32] = {
     0, 0, 0, 0,
