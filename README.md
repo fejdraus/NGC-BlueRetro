@@ -69,6 +69,11 @@ Details of every change are further down.
 A LED lights up once the controller has finished HID initialisation and is
 ready, and goes out when the device disconnects.
 
+The pin assignments above were checked against the board schematic,
+[`hardware/GC_BlueRetro.pdf`](../../blob/master/hardware/GC_BlueRetro.pdf) on the
+`master` branch: ESP32-WROOM, GameCube data lines on IO19 / IO5 / IO26 / IO27,
+four indicator LEDs D6–D9 behind 330R resistors, CH340T for USB.
+
 ## Buttons
 
 **EN** resets the adapter.
