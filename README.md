@@ -1,14 +1,27 @@
 # Fork: RetroScaler NGC-BlueRetro (HW1, 4 LEDs, GameCube)
 
-This fork targets the **RetroScaler NGC-BlueRetro** adapter: an ESP32 based
-GameCube receiver, hardware revision **HW1**, with four per slot indicator LEDs
-on GPIO 14 / 32 / 33 / 25. It is built from upstream `master` (`e1a9831`, the
-final state of the project) plus the changes listed below.
+This firmware is built from three parts:
 
-Prebuilt images are attached to the [releases](../../releases). The stock vendor
-firmware is a build of upstream commit `ddfc31b` (June 2025); RetroScaler does
-not publish its sources, so this fork reimplements the device delta on top of
-the last upstream code.
+1. **The original BlueRetro firmware** by Jacques Gagnon (darthcloud), taken at
+   upstream `master` (`e1a9831`), the final state of the project. It provides
+   everything that actually makes the adapter work: the Bluetooth stack, the
+   controller protocols and the wired console drivers.
+2. **The functionality [RetroScaler](https://github.com/RetroScaler/NGC-BlueRetro)
+   implemented for their NGC-BlueRetro adapters** — the four per slot connection
+   indicator LEDs, and rumble enabled out of the box. RetroScaler publishes the
+   binaries of their recent builds but not the sources (their repository is
+   frozen at January 2023 code, while the shipped firmware is a build of
+   upstream `ddfc31b` from June 2025), so that behaviour is reimplemented here
+   on top of the current upstream code.
+3. **Fixes and adaptations made specifically for compatibility with this
+   hardware**, listed below: the LED hooks reworked so BLE only controllers are
+   covered, hotplug brought back for HW1, the GameCube face buttons layout, the
+   mapping toggle moved off View, and a few upstream defects repaired.
+
+Target hardware: **RetroScaler NGC-BlueRetro**, ESP32, hardware revision
+**HW1**, GameCube, four indicator LEDs on GPIO 14 / 32 / 33 / 25.
+
+Prebuilt images are attached to the [releases](../../releases).
 
 ## Build variants
 
@@ -84,6 +97,15 @@ docker run --rm -v "$PWD":/project -w /project \
     ghcr.io/darthcloud/idf-blueretro:v5.5.0_2024-12-02 \
     bash -c 'source $IDF_PATH/export.sh && cp configs/hw1/gamecube_4leds_hotplug sdkconfig && idf.py build'
 ```
+
+## Credits
+
+BlueRetro is by [Jacques Gagnon (darthcloud)](https://github.com/darthcloud/BlueRetro),
+Apache-2.0. All the hard parts are his work; this fork only adapts it to one
+adapter.
+
+The adapter itself, and the four LEDs behaviour reimplemented here, are by
+[RetroScaler](https://github.com/RetroScaler/NGC-BlueRetro).
 
 Everything below is the original upstream README.
 
