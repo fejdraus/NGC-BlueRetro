@@ -1,3 +1,79 @@
+# Fork: RetroScaler NGC-BlueRetro (HW1, 4 LEDs, GameCube)
+
+This fork targets the **RetroScaler NGC-BlueRetro** adapter: an ESP32 based
+GameCube receiver, hardware revision **HW1**, with four per slot indicator LEDs
+on GPIO 14 / 32 / 33 / 25. It is built from upstream `master` (`e1a9831`, the
+final state of the project) plus the changes listed below.
+
+Prebuilt images are attached to the [releases](../../releases). The stock vendor
+firmware is a build of upstream commit `ddfc31b` (June 2025); RetroScaler does
+not publish its sources, so this fork reimplements the device delta on top of
+the last upstream code.
+
+## Build variants
+
+Both live in `configs/hw1/`, and both enable `BLUERETRO_HW2=n`, the 4 LEDs and
+`BLUERETRO_SYSTEM_GC`:
+
+| Config | Difference |
+|---|---|
+| `gamecube_4leds` | wired ports always answer the console, as the vendor firmware does |
+| `gamecube_4leds_hotplug` | a port is announced only once a Bluetooth controller is connected to that slot |
+
+## What this fork adds
+
+All of it sits behind Kconfig options that default to `n`, so upstream builds
+are bit for bit unaffected.
+
+* **`RETROSCALER_BLUERETRO_4LEDS_HW`** — the four per slot LEDs. Lit from
+  `bt_hid_init()` and cleared from `bt_host_reset_dev()`, which also covers BLE
+  only controllers; the vendor firmware hooked three scattered call sites keyed
+  on the device name read and missed them. Mutually exclusive with
+  `BLUERETRO_HW2`, whose reset and port sense lines use the same pins, and
+  refuses to build together with `BT_H4_TRACE` or `COVERAGE`, which claim
+  GPIO 14 as an UART CTS.
+* **`BLUERETRO_HW1_HOTPLUG`** — brings back the hotplug behaviour upstream
+  dropped for HW1 in `9600f0d`. HW1 has no port sense lines, but hotplug never
+  needed them: the port mask is derived from `BT_DEV_HID_INIT_DONE` alone and
+  `nsi_port_cfg()` is pure GPIO and RMT work. Also restores the pre-`9600f0d`
+  `nsi_init()` behaviour of starting silent.
+* **`BLUERETRO_GC_XBOX_FACE_LAYOUT`** — GameCube face buttons match by **name**
+  for Xbox and PlayStation pads. Upstream maps by position, which swaps X and B
+  on those pads, while the alternate table only matches names for Nintendo
+  layout pads, leaving Xbox users with no name match in either mode.
+* **`BLUERETRO_GC_TOGGLE_ON_SHARE`** — moves the face buttons mapping toggle
+  from View (`PAD_MS`) to Share (`PAD_MQ`), freeing View up to be mapped to a
+  regular button. `PAD_MQ` is added to `gc_mask`, otherwise
+  `adapter_map_from_btn()` would drop any mapping targeting it.
+
+Unconditional fixes:
+
+* **NSI RX channel re-arm** — a port can be disabled between RX End and TX End,
+  which leaves the RMT channel with `rx_en` cleared while only TX End puts it
+  back into RX, so the port would stay deaf after being enabled again. With
+  hotplug that window is reachable on every controller drop.
+* **Switch 2 HID init through the common dispatcher** —
+  `bt_att_hid_start_next_state()` called `bt_hid_sw2_init()` directly, bypassing
+  `bt_hid_init()` and everything hooked on it.
+* **BDADDR load from NVS restored** — `f9461fa` commented the function out and
+  left a hardcoded test MAC behind; that debug leftover shipped in `v25.10-beta`
+  and in the vendor firmware.
+* Rumble enabled in the factory config, as the vendor firmware does.
+
+## Building
+
+Upstream builds standalone since v25.04, no BlueRetroRoot needed:
+
+```
+docker run --rm -v "$PWD":/project -w /project \
+    ghcr.io/darthcloud/idf-blueretro:v5.5.0_2024-12-02 \
+    bash -c 'source $IDF_PATH/export.sh && cp configs/hw1/gamecube_4leds_hotplug sdkconfig && idf.py build'
+```
+
+Everything below is the original upstream README.
+
+---
+
 **This repository has been archived and is no longer under active development or maintenance.**
 
 ```
