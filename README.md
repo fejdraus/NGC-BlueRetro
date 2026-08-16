@@ -1,12 +1,30 @@
-# NGC-BlueRetro — custom firmware (HW1, 4 LEDs, GameCube)
+# NGC-BlueRetro — improved firmware for the RetroScaler adapter
+
+> ### This is a fork with improvements and fixes made specifically for the RetroScaler NGC-BlueRetro adapter
+>
+> Built on the original [BlueRetro](https://github.com/darthcloud/BlueRetro)
+> firmware, it adds the four LEDs behaviour of the
+> [RetroScaler](https://github.com/RetroScaler/NGC-BlueRetro) adapters on top of
+> the **current** upstream code, and repairs several defects that affect this
+> hardware. Target: **HW1**, GameCube, four indicator LEDs.
+>
+> **[Download the firmware →](../../releases)**
 
 <p align="center"><img src="https://raw.githubusercontent.com/RetroScaler/NGC-BlueRetro/master/image/logo.png" width="500"/></p>
 
-Firmware for the **RetroScaler NGC-BlueRetro** adapter — a Bluetooth controller
-receiver for the Nintendo GameCube, built around the ESP32, hardware revision
-**HW1**, with four per slot indicator LEDs on GPIO 14 / 32 / 33 / 25.
+## What you get over the stock firmware
 
-Prebuilt images are attached to the [releases](../../releases).
+| | Stock firmware | This fork |
+|---|---|---|
+| Base code | upstream `ddfc31b`, June 2025 | upstream `e1a9831`, the final release |
+| Switch 2 controllers | yes | yes, plus the upstream fix narrowing pairing to real SW2 pads |
+| Face buttons on Xbox / PlayStation pads | positional, so X and B are swapped | **matched by name**, with a toggle for Nintendo layout pads |
+| Mapping toggle button | View, which could not be used for anything else | **Share**, View is free |
+| LEDs on BLE only controllers | missed | **lit correctly** |
+| Wired ports | always announced to the console | **optional hotplug** build, ports follow the controllers |
+| Custom Bluetooth address | broken upstream, and in the stock build | **restored** |
+
+Details of every change are further down.
 
 ## Where this firmware comes from
 
