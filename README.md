@@ -60,6 +60,21 @@ Unconditional fixes:
   and in the vendor firmware.
 * Rumble enabled in the factory config, as the vendor firmware does.
 
+## Flashing
+
+The adapter exposes a **CH340** USB serial bridge (`VID_1A86` / `PID_7523`).
+Windows has no in-box driver for it, so the adapter shows up as an unknown
+device until one is installed:
+
+* Windows Update usually has it — Device Manager, *Update driver*, *Search
+  automatically*, look for `wch.cn - Ports`
+* or the vendor package: <https://www.wch-ic.com/downloads/CH341SER_EXE.html>
+
+Beware of the many mirrors serving unsigned copies of `CH341SER.EXE`.
+
+On at least one unit the bridge corrupts data above `115200` baud: reads broke
+at 8% at `460800` and at 1.6% at `921600`. Flash and dump at `115200`.
+
 ## Building
 
 Upstream builds standalone since v25.04, no BlueRetroRoot needed:
