@@ -1,4 +1,9 @@
-<p align="center"><img src="https://raw.githubusercontent.com/RetroScaler/NGC-BlueRetro/master/image/logo.png" width="520" alt="NGC-BlueRetro"/></p>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/logo-dark.png">
+    <img src="docs/logo-light.png" width="520" alt="BlueRetro"/>
+  </picture>
+</p>
 
 <h1 align="center">NGC-BlueRetro — improved firmware</h1>
 
